@@ -28,4 +28,4 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
   });
 
-module.exports = mongoose.model("carts", orderSchema);
+module.exports = mongoose.model("orders", orderSchema);

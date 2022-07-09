@@ -2,8 +2,8 @@ const UserModel = require('../models/User')
 const CryptoJS = require('crypto-js');
 
 
-
-const updateUser = async(req, res) => { 
+// @UPDATE DATA
+const update = async(req, res) => { 
   // Here going the validation or a request is created for this.
 
   if(req.body.password){
@@ -27,7 +27,8 @@ const updateUser = async(req, res) => {
   }
 }
 
-const deleteUser = async (req, res) => {
+// @DELETE DATA
+const destroy = async (req, res) => {
   try {
     await UserModel.findByIdAndDelete(req.params.id);
     res.status(200).json({
@@ -39,7 +40,8 @@ const deleteUser = async (req, res) => {
   }
 }
 
-const findUser = async (req, res) => {
+// @SHOW DATA
+const show = async (req, res) => {
   try {
     const user = await UserModel.findById(req.params.id);
     const {password, ...otherProperty} = user._doc;
@@ -53,7 +55,8 @@ const findUser = async (req, res) => {
   }
 }
 
-const getAll = async(req, res) => {
+// @GET DATA
+const index = async(req, res) => {
   const query = req.query.new;
   try{
     const users = query 
@@ -73,6 +76,7 @@ const getAll = async(req, res) => {
   }
 }
 
+// @GET ALL STATS
 const getStats = async(req, res) => {
   // will show how many users are registered per month. 
   let date = new Date();
@@ -113,9 +117,9 @@ const getStats = async(req, res) => {
 }
 
 module.exports = {
-  getAll,
-  updateUser,
-  deleteUser,
-  findUser,
+  index,
+  update,
+  destroy,
+  show,
   getStats,
 };

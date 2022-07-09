@@ -4,8 +4,6 @@ const morgan = require('morgan');
 const cors = require('cors')
 const mongoose = require('mongoose');
 const port = 5000;
-//const authRoute = require('./routes/auth.router');
-//const userRoute = require('./routes/user.router')
 
 // CONFIGURATION
 require('dotenv').config();
@@ -18,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/v1/auth', require('./routes/auth.router'));
 app.use('/api/v1/users', require('./routes/user.router'));
 app.use('/api/v1/products', require('./routes/product.router'));
+app.use('/api/v1/carts', require('./routes/cart.router'));
+app.use('/api/v1/orders', require('./routes/order.router'));
 
 // STARTING CONNECTION MONGODB_URI
 async function connection(){

@@ -5,17 +5,17 @@ const {
   verifyTokenAndAdmin
 } = require('../middlewares/auth.middleware'); 
 const {
-  index,
+  store,
   update,
   destroy,
-  show,
-  getStats,
-} = require('../controllers/UserController');
+  showUserCart,
+  index
+} = require('../controllers/CartController');
 
 
 router.get('/', verifyTokenAndAdmin, index);
-router.get('/find/:id', verifyTokenAndAdmin, show);
-router.get('/stats', verifyTokenAndAdmin, getStats);
+router.get('/find/:userId', verifyTokenAndAuthorization, showUserCart);
+router.post('/', verifyToken, store);
 router.put('/:id', verifyTokenAndAuthorization, update);
 router.delete('/:id', verifyTokenAndAuthorization, destroy);
 

@@ -1,6 +1,56 @@
 const ProductModel = require('../models/Product')
 
-const getAll = async (req, res) => {
+// @SAVE DATA
+const store = async (req, res) => {
+  const response = new ProductModel(req.body);
+  try {
+    const savedProduct = await response.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Product created successfully",
+      data: savedProduct
+    });
+  }catch(err) {
+    res.status(500).json(err);
+  }
+}
+
+// @UPDATE DATA
+const update = async (req, res) => {
+  try {
+    const updatedProduct = await ProductModel.findByIdAndUpdate(req.params.id, {
+      $set: req.body
+    }, {
+      new: true
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct
+    });
+  }catch(err) {
+    res.status(500).json(err);
+  }
+}
+
+// @DELETE DATA
+const destroy = async (req, res) => {
+  try {
+    await ProductModel.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Product has been delete...'
+    });
+  }catch(err){
+    res.status(500).json(err);
+  }
+}
+
+// @GET ALL DATA
+const index = async (req, res) => {
   /***
    * Route query example
    * /products?new=true
@@ -33,7 +83,8 @@ const getAll = async (req, res) => {
 
 }
 
-const findProduct = async (req, res) => {
+// @SHOW DATA
+const show = async (req, res) => {
   try {
     const product = await ProductModel.findById(req.params.id);
 
@@ -46,56 +97,11 @@ const findProduct = async (req, res) => {
   }
 }
 
-const addProduct = async (req, res) => {
-  const response = new ProductModel(req.body);
-  try {
-    const saveProduct = await response.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Product created successfully",
-      data: saveProduct
-    });
-  }catch(err) {
-    res.status(500).json(err);
-  }
-}
-
-const updateProduct = async (req, res) => {
-  try {
-    const updateProduct = await ProductModel.findByIdAndUpdate(req.params.id, {
-      $set: req.body
-    }, {
-      new: true
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Product updated successfully",
-      data: updateProduct
-    });
-  }catch(err) {
-    res.status(500).json(err);
-  }
-}
-
-const deleteProduct = async (req, res) => {
-  try {
-    await ProductModel.findByIdAndDelete(req.params.id);
-
-    res.status(200).json({
-      success: true,
-      message: 'Product has been delete...'
-    });
-  }catch(err){
-    res.status(500).json(err);
-  }
-}
 
 module.exports = {
-  getAll,
-  addProduct,
-  updateProduct,
-  deleteProduct,
-  findProduct
+  index,
+  store,
+  update,
+  destroy,
+  show
 }

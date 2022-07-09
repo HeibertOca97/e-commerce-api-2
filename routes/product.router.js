@@ -3,19 +3,19 @@ const {
   verifyTokenAndAdmin
 } = require('../middlewares/auth.middleware'); 
 const {
-  getAll,
-  addProduct,
-  updateProduct,
-  deleteProduct,
-  findProduct
+  index,
+  store,
+  update,
+  destroy,
+  show
 } = require('../controllers/ProductController');
 
 
-router.get('/', getAll);
-router.get('/find/:id', findProduct);
-router.post('/', verifyTokenAndAdmin, addProduct);
-router.put('/:id', verifyTokenAndAdmin, updateProduct);
-router.delete('/:id', verifyTokenAndAdmin, deleteProduct);
+router.get('/', index);
+router.get('/find/:id', show);
+router.post('/', verifyTokenAndAdmin, store);
+router.put('/:id', verifyTokenAndAdmin, update);
+router.delete('/:id', verifyTokenAndAdmin, destroy);
 
 
 module.exports = router;
