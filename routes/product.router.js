@@ -9,12 +9,12 @@ const {
   destroy,
   show
 } = require('../controllers/ProductController');
-
+const {uploadProductImage} = require('../libs/storage.multer');
 
 router.get('/', index);
 router.get('/find/:id', show);
-router.post('/', verifyTokenAndAdmin, store);
-router.put('/:id', verifyTokenAndAdmin, update);
+router.post('/', [verifyTokenAndAdmin, uploadProductImage], store);
+router.put('/:id', [verifyTokenAndAdmin, uploadProductImage], update);
 router.delete('/:id', verifyTokenAndAdmin, destroy);
 
 

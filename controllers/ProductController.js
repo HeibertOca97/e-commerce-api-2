@@ -1,9 +1,17 @@
 const ProductModel = require('../models/Product')
+const {
+  getPublicImagePath, 
+  getImageDirectoryPath,
+  removeImageFromDirectory
+} = require('../libs/file');
 
 // @SAVE DATA
-const store = async (req, res) => {
-  const response = new ProductModel(req.body);
+const store = async (req, res) => {  
   try {
+    if(req.file){
+      req.body.image = getPublicImagePath(req.file.filename);
+    }
+    const response = new ProductModel(req.body);
     const savedProduct = await response.save();
 
     res.status(200).json({
@@ -19,6 +27,12 @@ const store = async (req, res) => {
 // @UPDATE DATA
 const update = async (req, res) => {
   try {
+    if(req.file){
+      const {image} = await ProductModel.findOne({ _id: req.params.id }, {"image": true})
+      const originalDirectoryPath = getImageDirectoryPath(image); 
+      removeImageFromDirectory(originalDirectoryPath); 
+      req.body.image = getPublicImagePath(req.file.filename);
+    }
     const updatedProduct = await ProductModel.findByIdAndUpdate(req.params.id, {
       $set: req.body
     }, {
@@ -55,7 +69,7 @@ const index = async (req, res) => {
    * Route query example
    * /products?new=true
    * /products?category=name_category
-  ***/
+   ***/
   const qNew = req.query.new;
   const qCategory = req.query.category;
   try {

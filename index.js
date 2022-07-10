@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const cors = require('cors')
 const mongoose = require('mongoose');
 const port = 5000;
+const path = require('path');
 
 // CONFIGURATION
 require('dotenv').config();
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(`${process.env.PUBLIC_IMAGE_PATH}`, express.static(path.join(__dirname,'/uploads/images')));
 
 // ROUTER
 app.use('/api/v1/auth', require('./routes/auth.router'));
