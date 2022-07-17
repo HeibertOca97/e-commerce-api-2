@@ -9,7 +9,7 @@ const path = require('path');
 // CONFIGURATION
 require('dotenv').config();
 app.use(cors());
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(`${process.env.PUBLIC_IMAGE_PATH}`, express.static(path.join(__dirname,'/uploads/images')));
@@ -20,6 +20,7 @@ app.use('/api/v1/users', require('./routes/user.router'));
 app.use('/api/v1/products', require('./routes/product.router'));
 app.use('/api/v1/carts', require('./routes/cart.router'));
 app.use('/api/v1/orders', require('./routes/order.router'));
+app.use('/api/v1/payment', require('./routes/payment.router'));
 
 // STARTING CONNECTION MONGODB_URI
 async function connection(){
