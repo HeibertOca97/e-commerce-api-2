@@ -7,12 +7,12 @@ const port = 5000;
 const path = require('path');
 
 // CONFIGURATION
-require('dotenv').config();
-app.use(cors());
-app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+require('dotenv').config();
+app.use(cors());
 app.use(`${process.env.PUBLIC_IMAGE_PATH}`, express.static(path.join(__dirname,'/uploads/images')));
+app.use(morgan('dev'));
 
 // ROUTER
 app.use('/api/v1/auth', require('./routes/auth.router'));

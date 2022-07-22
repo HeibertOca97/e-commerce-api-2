@@ -24,26 +24,26 @@ const verifyToken = (req, res, next) => {
 }
 
 const verifyRefreshToken = (req, res, next) => {
-  const authRefreshToken = req.headers.refreshToken;
+  const {refreshToken} = req.body;
 
-  if(authRefreshToken){
-    try{
-      const refreshToken = authRefreshToken.split(" ")[1];
-      const data = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  if(refreshToken){
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (error, data) => {
+      if(error){
+        res.status(403).json({
+          success: false, 
+          error: "Token is not valid!"
+        });
+      } 
       req.user = data;
       next();
-    }catch(err) {
-      res.status(403).json({
-        success: false, 
-        error: "Refresh Token is not valid!"
-      });
-    }
+    });
   }else{
     res.status(401).json({
       success: false,
       error: "You are not Authenticated!"
-    });
+    })
   }
+
 }
 
 const verifyTokenAndAuthorization = (req, res, next) => {
@@ -73,8 +73,8 @@ const verifyTokenAndAdmin = (req, res, next) => {
 }
 
 module.exports = {
-  verifyRefreshToken,
   verifyToken,
+  verifyRefreshToken,
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin
 }

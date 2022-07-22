@@ -1,6 +1,6 @@
 const CryptoJS = require('crypto-js');
-const jwt = require('jsonwebtoken');
-const UserModel = require('../models/User')
+const UserModel = require('../models/User');
+const { createAndGetToken, createAndGetRefreshToken } = require('../libs/jwt.help')
 
 const login = async(req, res) => {
   // Here going the validation or a request is created for this.
@@ -12,29 +12,23 @@ const login = async(req, res) => {
 
     const hashedPassword = CryptoJS.AES.decrypt(user.password, process.env.CRYPTO_PASSWORD_SECRET);
     const passwordString = hashedPassword.toString(CryptoJS.enc.Utf8);
-    
+
     passwordString !== req.body.password && res.status(401).json({status: false, error: "Wrong credentials!"});
 
-    const token = jwt.sign({
+    const payload = {
       id: user._id,
-      isAdmin: user.isAdmin
-    }, 
-    process.env.ACCESS_TOKEN_SECRET,
-    {expiresIn: '1d'});
-    
-    const resfreshToken = jwt.sign({
-      id: user._id,
-      isAdmin: user.isAdmin
-    }, 
-    process.env.REFRESH_TOKEN_SECRET,
-    {expiresIn: '1d'});
+      isAdmin: user.isAdmin,
+    }
 
-    const newData = {...user._doc, token, resfreshToken};
-    const {password, ...otherProperty} = newData;
+    const getToken = createAndGetToken(payload, '1h');
+    const getRefreshToken = createAndGetRefreshToken(payload, '7d');
 
     res.status(200).json({
       success: true, 
-      data: otherProperty
+      data: {
+        token: getToken,
+        refreshToken: getRefreshToken
+      }
     });
   }catch(err){
     res.status(500).json(err);
@@ -45,9 +39,9 @@ const login = async(req, res) => {
 const register = async (req, res) => {
   const {username, email, password} = req.body;
   // Here going the validation or a request is created for this.
-  
+
   // If all goes well, this will be saved
-  const user = new UserModel({
+  const response = new UserModel({
     username,
     email,
     password: CryptoJS.AES.encrypt(password, process.env.CRYPTO_PASSWORD_SECRET).toString(),
@@ -55,27 +49,63 @@ const register = async (req, res) => {
   });
 
   try{
-    const response = await user.save();
-    const {password, ...newResponse} = response._doc;
+    const user = await response.save();
+    const payload = {
+      id: user._id,
+      isAdmin: user.isAdmin,
+    }
+    const getToken = createAndGetToken(payload, '1h');
+    const getRefreshToken = createAndGetRefreshToken(payload, '7d');
     res.status(200).json({
       success: true,
-      data: newResponse
+      data: {
+        token: getToken,
+        refreshToken: getRefreshToken
+      }
     });
   }catch(err){
-    // err return {index, code}
-    res.status(500).json(err);
-    console.log(err);
+    res.status(500).json({
+      success: false,
+      error: 'Existing credentials, Please try again!',
+    });
   }
 }
 
-const refreshToken = (req, res) => {
-  console.log(req.user);
-  //const response = await UserModel.findOne({ _id: req.user.id });
-  res.json(201).json(req.user);
+const refreshToken = async (req, res) => {
+  try{
+    const { id, isAdmin } = req.user;
+
+    const payload = {
+      id,
+      isAdmin
+    }
+
+    const getToken = createAndGetToken(payload, '1h');
+    const getRefreshToken = createAndGetRefreshToken(payload, '7d');
+
+    res.status(200).json({
+      success: true, 
+      data: {
+        token: getToken,
+        refreshToken: getRefreshToken
+      }
+    });
+  }catch(err){
+    res.status(500).json(err);
+  }
+
+}
+
+const logout = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Successfully logged out'
+  })
 }
 
 module.exports = {
   register,
   login,
-  refreshToken
+  refreshToken,
+  logout
 }

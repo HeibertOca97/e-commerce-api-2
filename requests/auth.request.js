@@ -8,21 +8,21 @@ const request = [
 const loginRequest = (req, res, next) => {
   const {username, password} = req.body;
   let error = '';
-  let required = true;
+  let required = false;
 
   if(!username || !password){
     error = `${request[0]} and ${request[2]} are required`;
-    required = false;
+    required = true;
   }
 
-  if(!required){
+  if(required){
     res.status(400).json({
       success: false,
       error: error
     });
+  }else{
+    next();
   }
-  
-  next();
 }
 
 // REGISTER REQUEST
